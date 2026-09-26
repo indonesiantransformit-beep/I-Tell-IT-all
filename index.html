@@ -211,13 +211,18 @@ function createMessageCard(name, message, createdAt, isPro = false, messageId = 
   rightHeaderDiv.appendChild(dateSpan);
 
   // Tampilkan Tombol Hapus HANYA JIKA User adalah Admin
-  if (userProfile && userProfile.is_admin) {
-    const deleteBtn = document.createElement('button');
-    deleteBtn.className = 'text-xs bg-rose-500/20 hover:bg-rose-500/40 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded transition';
-    deleteBtn.textContent = 'Hapus';
-    deleteBtn.onclick = () => deleteMessage(messageId);
-    rightHeaderDiv.appendChild(deleteBtn);
-  }
+  // Di dalam fungsi createMessageCard:
+// Cek apakah user adalah admin
+// Di dalam createMessageCard(name, message, createdAt, isPro = false, messageId = null):
+
+// Cek apakah user Profile ada dan is_admin bernilai true (atau boolean true)
+if (userProfile && (userProfile.is_admin === true || userProfile.is_admin === 'true')) {
+  const deleteBtn = document.createElement('button');
+  deleteBtn.className = 'text-xs bg-rose-500/20 hover:bg-rose-500/40 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded transition ml-2 cursor-pointer';
+  deleteBtn.textContent = 'Hapus';
+  deleteBtn.onclick = () => deleteMessage(messageId);
+  rightHeaderDiv.appendChild(deleteBtn);
+}
 
   headerDiv.appendChild(authorDiv);
   headerDiv.appendChild(rightHeaderDiv);
@@ -296,21 +301,25 @@ async function handleAuthChange(user) {
 
     // Ambil Data Profile dari Supabase
     async function fetchUserProfile(userId) {
-      try {
-        const { data, error } = await supabaseClient
-          .from('profiles')
-          .select('*')
-          .eq('id', userId)
-          .single();
+  try {
+    const { data, error } = await supabaseClient
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
 
-        if (error && error.code !== 'PGRST116') throw error;
+    if (error && error.code !== 'PGRST116') throw error;
 
-        userProfile = data;
-        updateProUI();
-      } catch (err) {
-        console.error('Error fetching profile:', err);
-      }
-    }
+    // Simpan profile ke variabel global
+    userProfile = data;
+    
+    // Perbarui UI Pro & Re-render pesan agar tombol Hapus Admin muncul
+    updateProUI();
+    await loadMessages(); 
+  } catch (err) {
+    console.error('Error fetching profile:', err);
+  }
+}
 
     // Cek Apakah Membership Pro Masih Aktif
     function isProActive() {
