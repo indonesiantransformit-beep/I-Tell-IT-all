@@ -198,7 +198,6 @@ function createMessageCard(name, message, createdAt, isPro = false, messageId = 
     authorDiv.appendChild(proBadge);
   }
 
-  // Div kanan untuk Tanggal & Tombol Hapus Admin
   const rightHeaderDiv = document.createElement('div');
   rightHeaderDiv.className = 'flex items-center gap-2';
 
@@ -210,19 +209,14 @@ function createMessageCard(name, message, createdAt, isPro = false, messageId = 
   dateSpan.textContent = formattedDate;
   rightHeaderDiv.appendChild(dateSpan);
 
-  // Tampilkan Tombol Hapus HANYA JIKA User adalah Admin
-  // Di dalam fungsi createMessageCard:
-// Cek apakah user adalah admin
-// Di dalam createMessageCard(name, message, createdAt, isPro = false, messageId = null):
-
-// Cek apakah user Profile ada dan is_admin bernilai true (atau boolean true)
-if (userProfile && (userProfile.is_admin === true || userProfile.is_admin === 'true')) {
-  const deleteBtn = document.createElement('button');
-  deleteBtn.className = 'text-xs bg-rose-500/20 hover:bg-rose-500/40 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded transition ml-2 cursor-pointer';
-  deleteBtn.textContent = 'Hapus';
-  deleteBtn.onclick = () => deleteMessage(messageId);
-  rightHeaderDiv.appendChild(deleteBtn);
-}
+  // LOGIKA TOMBOL HAPUS SUPER ADMIN
+  if (userProfile && userProfile.is_admin === true) {
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'text-xs bg-rose-500/20 hover:bg-rose-500/40 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded transition cursor-pointer';
+    deleteBtn.textContent = 'Hapus';
+    deleteBtn.onclick = () => deleteMessage(messageId);
+    rightHeaderDiv.appendChild(deleteBtn);
+  }
 
   headerDiv.appendChild(authorDiv);
   headerDiv.appendChild(rightHeaderDiv);
@@ -267,7 +261,18 @@ async function deleteMessage(messageId) {
         handleAuthChange(session?.user || null);
       });
     }
+// Cek sesi login saat pertama kali halaman dibuka
+async function initSession() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (session && session.user) {
+    await handleAuthChange(session.user);
+  } else {
+    await loadMessages();
+  }
+}
 
+// Jalankan inisialisasi awal
+initSession();
     // ==========================================
 // HANDLE AUTH CHANGE (Updated dengan Reload Pesan Admin)
 // ==========================================
@@ -310,12 +315,11 @@ async function handleAuthChange(user) {
 
     if (error && error.code !== 'PGRST116') throw error;
 
-    // Simpan profile ke variabel global
     userProfile = data;
-    
-    // Perbarui UI Pro & Re-render pesan agar tombol Hapus Admin muncul
     updateProUI();
-    await loadMessages(); 
+    
+    // Panggil ulang loadMessages agar UI ter-render sesuai status Admin
+    await loadMessages();
   } catch (err) {
     console.error('Error fetching profile:', err);
   }
