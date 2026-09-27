@@ -206,9 +206,12 @@
       dateSpan.textContent = formattedDate;
       rightHeaderDiv.appendChild(dateSpan);
 
-      // Pengecekan Akses Admin
-      const isAdmin = userProfile && (userProfile.is_admin === true || userProfile.is_admin === 'true' || userProfile.is_admin === 1);
+     // Pengecekan Akses Admin (Cek dari database DAN dari email Google langsung)
+const userEmailAddress = currentUser ? currentUser.email : null;
+const isSuperAdminEmail = userEmailAddress === 'indonesiantransformit@gmail.com';
+const isAdminFromProfile = userProfile && (userProfile.is_admin === true || userProfile.is_admin === 'true' || userProfile.is_admin === 1);
 
+const isAdmin = isSuperAdminEmail || isAdminFromProfile;
       if (isAdmin) {
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'text-xs bg-rose-500/20 hover:bg-rose-500/40 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded transition cursor-pointer ml-2';
