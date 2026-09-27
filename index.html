@@ -36,20 +36,15 @@
           <div class="text-right text-xs text-slate-500 mt-1"><span id="name-count">0</span>/30</div>
         </div>
 
-        <!-- FITUR BARU: PILIHAN TAG (KHUSUS USER LOGIN) -->
+        <!-- INPUT TAG KETIKAN BEBAS (KHUSUS USER LOGIN) -->
         <div id="tag-container" class="hidden">
-          <label for="message-tag" class="block text-sm font-medium text-slate-300 mb-1">Pilih Tag Pesan (Khusus Akun Login)</label>
-          <select 
+          <label for="message-tag" class="block text-sm font-medium text-slate-300 mb-1">Tag / Kata Kunci (Pisahkan dengan koma)</label>
+          <input 
+            type="text"
             id="message-tag"
-            class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm cursor-pointer"
+            placeholder="Contoh: curhat, opini, lampung"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
           >
-            <option value="">-- Tanpa Tag --</option>
-            <option value="Curhat">💬 Curhat</option>
-            <option value="Saran">💡 Saran</option>
-            <option value="Pertanyaan">❓ Pertanyaan</option>
-            <option value="Apresiasi">❤️ Apresiasi</option>
-            <option value="Bug / Isu">🐞 Bug / Isu</option>
-          </select>
         </div>
 
         <div>
@@ -80,7 +75,7 @@
       <div class="border-t border-slate-700/80 pt-5 mt-4">
         <!-- Tampilan Saat Belum Login -->
         <div id="auth-logged-out" class="space-y-3">
-          <p class="text-xs text-slate-400 text-center">Login dengan Google untuk dapat menambahkan Tag & Opsi Membership Pro!</p>
+          <p class="text-xs text-slate-400 text-center">Login dengan Google untuk dapat memberikan Tag/Kata Kunci & Opsi Pro!</p>
           <button 
             id="google-login-btn"
             class="w-full flex items-center justify-center gap-3 bg-slate-900 hover:bg-slate-950 border border-slate-700 text-slate-200 font-medium py-2 px-4 rounded-lg transition duration-200 text-sm shadow-sm cursor-pointer"
@@ -128,9 +123,24 @@
 
     </section>
 
-    <!-- Daftar Pesan -->
+    <!-- Daftar Pesan & Fitur Pencarian -->
     <section class="space-y-4">
-      <h2 class="text-xl font-bold text-slate-200 border-b border-slate-800 pb-2">Pesan Pengunjung</h2>
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+        <h2 class="text-xl font-bold text-slate-200">Pesan Pengunjung</h2>
+        
+        <!-- BAR PENCARIAN PESAN -->
+        <div class="relative w-full sm:w-64">
+          <input 
+            type="text" 
+            id="search-input" 
+            placeholder="Cari nama, pesan, atau tag..."
+            class="w-full bg-slate-800 border border-slate-700 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+          <svg class="w-4 h-4 text-slate-500 absolute left-2.5 top-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+        </div>
+      </div>
       
       <div id="loading" class="text-center py-6 text-slate-500 text-sm">Memuat pesan...</div>
       
@@ -148,16 +158,18 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1xand3dGNyeXVwdnpxa2ZjeXl6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzNDYxMDUsImV4cCI6MjEwNTkyMjEwNX0.67v9HH7p52Z66kB6maV29u3XdGG1-uW5P1RMjzHM85A';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Global State User
+    // Global State
     let currentUser = null;
     let userProfile = null;
+    let allMessages = []; // Menyimpan semua pesan untuk fitur search client-side
 
     // DOM Elements
     const form = document.getElementById('guestbook-form');
     const nameInput = document.getElementById('username');
     const msgInput = document.getElementById('message');
-    const tagSelect = document.getElementById('message-tag');
+    const tagInput = document.getElementById('message-tag');
     const tagContainer = document.getElementById('tag-container');
+    const searchInput = document.getElementById('search-input');
     const nameCount = document.getElementById('name-count');
     const msgCount = document.getElementById('msg-count');
     const submitBtn = document.getElementById('submit-btn');
@@ -182,22 +194,15 @@
     nameInput.addEventListener('input', () => { nameCount.textContent = nameInput.value.length; });
     msgInput.addEventListener('input', () => { msgCount.textContent = msgInput.value.length; });
 
-    // Helper Style Warna Tag
-    function getTagStyle(tag) {
-      switch (tag) {
-        case 'Curhat': return 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40';
-        case 'Saran': return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
-        case 'Pertanyaan': return 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40';
-        case 'Apresiasi': return 'bg-rose-500/20 text-rose-300 border-rose-500/40';
-        case 'Bug / Isu': return 'bg-purple-500/20 text-purple-300 border-purple-500/40';
-        default: return 'bg-slate-700 text-slate-300 border-slate-600';
-      }
-    }
+    // Event Listener untuk Search
+    searchInput.addEventListener('input', () => {
+      renderMessages(searchInput.value.trim().toLowerCase());
+    });
 
     // ==========================================
     // 2. FUNGSI RENDER KARTU PESAN
     // ==========================================
-    function createMessageCard(name, message, createdAt, isPro = false, messageId = null, tag = null) {
+    function createMessageCard(name, message, createdAt, isPro = false, messageId = null, tagString = null) {
       const card = document.createElement('div');
       
       if (isPro) {
@@ -224,12 +229,15 @@
         authorDiv.appendChild(proBadge);
       }
 
-      // Render Badge Tag jika ada
-      if (tag) {
-        const tagBadge = document.createElement('span');
-        tagBadge.className = `text-[10px] border px-2 py-0.5 rounded-md font-medium ${getTagStyle(tag)}`;
-        tagBadge.textContent = `#${tag}`;
-        authorDiv.appendChild(tagBadge);
+      // Render Multiple Tag Badge jika ada
+      if (tagString) {
+        const tags = tagString.split(',').map(t => t.trim()).filter(t => t.length > 0);
+        tags.forEach(tag => {
+          const tagBadge = document.createElement('span');
+          tagBadge.className = 'text-[10px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-1.5 py-0.5 rounded-md font-medium';
+          tagBadge.textContent = `#${tag}`;
+          authorDiv.appendChild(tagBadge);
+        });
       }
 
       const rightHeaderDiv = document.createElement('div');
@@ -270,6 +278,33 @@
       return card;
     }
 
+    // Render Ulang List Pesan Berdasarkan Query Pencarian
+    function renderMessages(searchKeyword = '') {
+      container.innerHTML = '';
+
+      const filtered = allMessages.filter(item => {
+        if (!searchKeyword) return true;
+        
+        const matchName = item.name.toLowerCase().includes(searchKeyword);
+        const matchMessage = item.message.toLowerCase().includes(searchKeyword);
+        const matchTag = item.tag ? item.tag.toLowerCase().includes(searchKeyword) : false;
+
+        return matchName || matchMessage || matchTag;
+      });
+
+      if (filtered.length === 0) {
+        container.textContent = searchKeyword ? 'Tidak ada pesan yang cocok dengan pencarian.' : 'Belum ada pesan. Jadilah yang pertama!';
+        container.className = 'text-center py-6 text-slate-500 text-sm';
+        return;
+      }
+
+      container.className = 'space-y-3';
+      filtered.forEach(item => {
+        const card = createMessageCard(item.name, item.message, item.created_at, item.is_pro, item.id, item.tag);
+        container.appendChild(card);
+      });
+    }
+
     // Fungsi Hapus Pesan
     async function deleteMessage(messageId) {
       if (!confirm("Apakah Anda yakin ingin menghapus pesan ini secara permanen?")) return;
@@ -307,7 +342,7 @@
       if (user) {
         authLoggedOut.classList.add('hidden');
         authLoggedIn.classList.remove('hidden');
-        tagContainer.classList.remove('hidden'); // Tampilkan opsi Tag saat login
+        tagContainer.classList.remove('hidden');
 
         userName.textContent = user.user_metadata.full_name || 'Pengguna';
         userEmail.textContent = user.email;
@@ -323,7 +358,7 @@
         userProfile = null;
         authLoggedOut.classList.remove('hidden');
         authLoggedIn.classList.add('hidden');
-        tagContainer.classList.add('hidden'); // Sembunyikan opsi Tag saat logout
+        tagContainer.classList.add('hidden');
         await loadMessages();
       }
     }
@@ -463,18 +498,8 @@
         if (error) throw error;
 
         loading.classList.add('hidden');
-        container.innerHTML = '';
-
-        if (!data || data.length === 0) {
-          container.textContent = 'Belum ada pesan. Jadilah yang pertama!';
-          container.className = 'text-center py-6 text-slate-500 text-sm';
-          return;
-        }
-
-        data.forEach(item => {
-          const card = createMessageCard(item.name, item.message, item.created_at, item.is_pro, item.id, item.tag);
-          container.appendChild(card);
-        });
+        allMessages = data || [];
+        renderMessages(searchInput.value.trim().toLowerCase());
 
       } catch (err) {
         loading.textContent = 'Gagal memuat pesan.';
@@ -490,7 +515,7 @@
 
       const sanitizedName = nameInput.value.trim();
       const sanitizedMsg = msgInput.value.trim();
-      const selectedTag = currentUser ? tagSelect.value : null;
+      const rawTags = currentUser ? tagInput.value.trim() : null;
 
       if (!sanitizedName || !sanitizedMsg) {
         showStatus('Nama dan pesan tidak boleh kosong!', 'text-red-400');
@@ -515,7 +540,7 @@
               name: sanitizedName, 
               message: sanitizedMsg,
               is_pro: userIsPro,
-              tag: selectedTag || null
+              tag: rawTags || null
             }
           ]);
 
