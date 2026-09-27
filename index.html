@@ -324,11 +324,15 @@
     // 3. SUPABASE AUTH & PROFILE
     // ==========================================
     async function initAuth() {
-      // Jalankan loadMessages terlebih dahulu agar pesan publik langsung muncul
-      await loadMessages();
+      // Jalankan loadMessages secara independen dengan Catch
+      loadMessages().catch(err => console.error("Message load error:", err));
 
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      await handleAuthChange(session?.user || null);
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        await handleAuthChange(session?.user || null);
+      } catch (e) {
+        console.error("Session check error:", e);
+      }
 
       supabaseClient.auth.onAuthStateChange(async (_event, session) => {
         await handleAuthChange(session?.user || null);
@@ -342,12 +346,12 @@
         authLoggedIn.classList.remove('hidden');
         tagContainer.classList.remove('hidden');
 
-        userName.textContent = user.user_metadata.full_name || 'Pengguna';
+        userName.textContent = user.user_metadata?.full_name || user.email.split('@')[0];
         userEmail.textContent = user.email;
-        userAvatar.src = user.user_metadata.avatar_url || 'https://via.placeholder.com/150';
+        userAvatar.src = user.user_metadata?.avatar_url || 'https://via.placeholder.com/150';
 
         if (!nameInput.value) {
-          nameInput.value = user.user_metadata.full_name || '';
+          nameInput.value = user.user_metadata?.full_name || '';
           nameCount.textContent = nameInput.value.length;
         }
 
@@ -419,14 +423,14 @@
         const { error } = await supabaseClient.auth.signInWithOAuth({
           provider: 'google',
           options: { 
-            redirectTo: window.location.href,
+            redirectTo: window.location.origin + window.location.pathname,
             queryParams: { prompt: 'select_account' }
           }
         });
 
         if (error) throw error;
       } catch (err) {
-        alert("Gagal menghubungkan ke Google Login.");
+        alert("Gagal menghubungkan ke Google Login: " + err.message);
         console.error('Login Error:', err);
         googleLoginBtn.disabled = false;
         googleLoginBtn.innerHTML = `
@@ -467,7 +471,7 @@
           alert("Selamat! Membership PRO Anda berhasil diaktifkan selama 30 hari.");
           await fetchUserProfile(currentUser.id);
         } else {
-          alert("Gagal memperbarui status membership.");
+          alert("Gagal memperbarui status membership: " + error.message);
           console.error(error);
         }
       }
@@ -480,7 +484,7 @@
       try {
         const { data, error } = await supabaseClient
           .from('guestbook')
-          .select('id, name, message, created_at, is_pro, tag')
+          .select('*')
           .order('created_at', { ascending: false });
 
         if (error) throw error;
@@ -490,7 +494,7 @@
         renderMessages(searchInput.value.trim().toLowerCase());
 
       } catch (err) {
-        loading.textContent = 'Gagal memuat pesan. Pastikan RLS / Hak Akses di Supabase sudah dibuka.';
+        loading.textContent = 'Gagal memuat pesan: ' + err.message;
         console.error('Fetch Error:', err);
       }
     }
@@ -535,14 +539,11 @@
         if (error) throw error;
 
         showStatus('Pesan berhasil dikirim!', 'text-emerald-400');
-        form.reset();
-        nameCount.textContent = '0';
+        
+        // Reset hanya field pesan
+        msgInput.value = '';
         msgCount.textContent = '0';
-
-        if (currentUser) {
-          nameInput.value = currentUser.user_metadata.full_name || '';
-          nameCount.textContent = nameInput.value.length;
-        }
+        if (tagInput) tagInput.value = '';
 
         await loadMessages();
 
@@ -553,7 +554,7 @@
         submitBtn.disabled = false;
         submitBtn.textContent = 'Kirim Pesan';
       }
-    }
+    });
 
     function showStatus(msg, colorClass) {
       formStatus.textContent = msg;
