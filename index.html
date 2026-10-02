@@ -61,12 +61,20 @@
           disabled
           class="hidden w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 px-4 rounded-xl transition duration-200 shadow-md active:scale-[0.99] disabled:opacity-50 cursor-pointer text-sm"
         >
-          Kirim Pesan
+          Kirim Pesan Anonim
         </button>
+
+        <!-- INDIKATOR PRIVASI ANONIM -->
+        <div id="anon-guarantee" class="hidden flex items-center justify-center gap-1.5 text-[11px] text-emerald-400 font-medium pt-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+          </svg>
+          Identitas &amp; email Anda terlindungi (pesan terkirim sebagai Anonymous).
+        </div>
 
         <!-- PERINGATAN SAAT BELUM LOGIN -->
         <div id="login-warning" class="bg-zinc-900/60 border border-zinc-700/80 p-3 rounded-xl text-center text-xs text-amber-400/90 font-medium">
-          Silakan masuk dengan akun Google terlebih dahulu untuk dapat mengirim pesan.
+          Silakan masuk dengan akun Google terlebih dahulu untuk verifikasi anti-spam. Pesan Anda tetap 100% anonim.
         </div>
 
         <p id="form-status" class="text-center text-xs hidden font-medium"></p>
@@ -175,6 +183,7 @@
     const searchInput = document.getElementById('search-input');
     const msgCount = document.getElementById('msg-count');
     const submitBtn = document.getElementById('submit-btn');
+    const anonGuarantee = document.getElementById('anon-guarantee');
     const loginWarning = document.getElementById('login-warning');
     const formStatus = document.getElementById('form-status');
     const container = document.getElementById('messages-container');
@@ -322,6 +331,7 @@
         // Aktifkan Form Kirim
         submitBtn.classList.remove('hidden');
         submitBtn.disabled = false;
+        anonGuarantee.classList.remove('hidden');
         loginWarning.classList.add('hidden');
 
         userName.textContent = user.displayName || user.email.split('@')[0];
@@ -335,6 +345,7 @@
         // Kunci Form Kirim
         submitBtn.classList.add('hidden');
         submitBtn.disabled = true;
+        anonGuarantee.classList.add('hidden');
         loginWarning.classList.remove('hidden');
       }
       
@@ -439,7 +450,7 @@
         showStatus('Gagal mengirim pesan: ' + err.message, 'text-red-400');
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Kirim Pesan';
+        submitBtn.textContent = 'Kirim Pesan Anonim';
       }
     });
 
