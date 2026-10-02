@@ -32,25 +32,25 @@
 
         <!-- INPUT TAG KETIKAN BEBAS -->
         <div id="tag-container" class="hidden">
-          <label for="message-tag" class="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1.5">Tag / Kata Kunci (Opsional, pisahkan dengan koma)</label>
+          <label for="message-tag" class="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1.5">TAG / KATA KUNCI (OPTIONAL, PISAHKAN DENGAN KOMA)</label>
           <input 
             type="text"
             id="message-tag"
-            placeholder="Contoh: Curhat, Saran, Katakan"
-            class="w-full bg-zinc-900/80 border border-zinc-700 rounded-xl px-4 py-2.5 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-400 text-sm transition"
+            placeholder="Contoh: Utarakan, Katakan, Sampaikan"
+            class="w-full bg-zinc-900/80 border border-zinc-700 rounded-xl px-4 py-2.5 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm transition"
           >
         </div>
 
-        <!-- INPUT PESAN (TIDAK ADA INPUT NAMA) -->
+        <!-- INPUT PESAN -->
         <div>
-          <label for="message" class="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1.5">Pesan Anonim</label>
+          <label for="message" class="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1.5">PESAN</label>
           <textarea 
             id="message" 
             rows="3" 
             maxlength="200" 
             required
             placeholder="Tulis pesan Anda di sini (maksimal 200 karakter)..."
-            class="w-full bg-zinc-900/80 border border-zinc-700 rounded-xl px-4 py-2.5 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:border-transparent text-sm resize-none transition"
+            class="w-full bg-zinc-900/80 border border-zinc-700 rounded-xl px-4 py-2.5 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm resize-none transition"
           ></textarea>
           <div class="text-right text-[11px] text-zinc-500 mt-1"><span id="msg-count">0</span>/200</div>
         </div>
@@ -62,7 +62,7 @@
           disabled
           class="hidden w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 px-4 rounded-xl transition duration-200 shadow-md active:scale-[0.99] disabled:opacity-50 cursor-pointer text-sm"
         >
-          Kirim Pesan Anonim
+          Kirim Pesan
         </button>
 
         <!-- INDIKATOR PRIVASI ANONIM -->
@@ -105,12 +105,12 @@
           <div class="flex items-center justify-between bg-zinc-900/70 p-3 rounded-xl border border-zinc-700/60">
             <div class="flex items-center space-x-3">
               <img id="user-avatar" src="" alt="Avatar" class="w-9 h-9 rounded-full border border-zinc-600">
-              <div>
-                <span id="user-name" class="text-sm font-semibold text-zinc-200 block"></span>
-                <p id="user-email" class="text-xs text-zinc-400"></p>
+              <div class="overflow-hidden">
+                <span id="user-name" class="text-sm font-semibold text-zinc-200 block truncate"></span>
+                <p id="user-email" class="text-xs text-zinc-400 truncate"></p>
               </div>
             </div>
-            <button id="logout-btn" class="text-xs text-rose-400 hover:text-rose-300 font-medium px-2.5 py-1 bg-rose-500/10 hover:bg-rose-500/20 rounded-lg transition cursor-pointer">
+            <button id="logout-btn" class="text-xs text-rose-400 hover:text-rose-300 font-medium px-2.5 py-1 bg-rose-500/10 hover:bg-rose-500/20 rounded-lg transition cursor-pointer shrink-0">
               Keluar
             </button>
           </div>
@@ -129,8 +129,8 @@
           <input 
             type="text" 
             id="search-input" 
-            placeholder="Cari pesan atau tag..."
-            class="w-full bg-zinc-800/80 border border-zinc-700 rounded-xl pl-9 pr-3 py-1.5 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-400"
+            placeholder="Cari nama, pesan, atau tag..."
+            class="w-full bg-zinc-800/80 border border-zinc-700 rounded-xl pl-9 pr-3 py-1.5 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
           <svg class="w-4 h-4 text-zinc-500 absolute left-2.5 top-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -245,7 +245,7 @@
       dateSpan.textContent = formattedDate;
       rightHeaderDiv.appendChild(dateSpan);
 
-      // Cek Hak Akses Hapus (Super Admin Email)
+      // Super Admin Email Hapus
       if (currentUser && currentUser.email === 'indonesiantransformit@gmail.com') {
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'text-xs bg-rose-500/20 hover:bg-rose-500/40 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded transition cursor-pointer ml-2';
@@ -402,21 +402,21 @@
       e.preventDefault();
 
       if (!currentUser) {
-        showStatus('Anda harus login terlebih dahulu untuk mengirim pesan!', 'text-red-400');
+        showStatus('Anda harus login terlebih dahulu untuk mengirim pesan!', 'text-rose-400');
         return;
       }
-
-      // OTOMATIS GENERATE NAMA ANONIM (CONTOH: Anonymous#4921)
-      const randomNumber = Math.floor(1000 + Math.random() * 9000);
-      const autoAnonymousName = `Anonymous#${randomNumber}`;
 
       const sanitizedMsg = msgInput.value.trim();
       const rawTags = tagInput ? tagInput.value.trim() : null;
 
       if (!sanitizedMsg) {
-        showStatus('Pesan tidak boleh kosong!', 'text-red-400');
+        showStatus('Pesan tidak boleh kosong!', 'text-rose-400');
         return;
       }
+
+      // OTOMATIS GENERATE NAMA ANONIM (Anonymous#XXXX)
+      const randomNumber = Math.floor(1000 + Math.random() * 9000);
+      const autoAnonymousName = `Anonymous#${randomNumber}`;
 
       submitBtn.disabled = true;
       submitBtn.textContent = 'Mengirim...';
@@ -436,6 +436,7 @@
 
         showStatus('Pesan berhasil dikirim!', 'text-emerald-400');
         
+        // Reset Form
         msgInput.value = '';
         msgCount.textContent = '0';
         if (tagInput) tagInput.value = '';
@@ -443,10 +444,10 @@
         await loadMessages();
 
       } catch (err) {
-        showStatus('Gagal mengirim pesan: ' + err.message, 'text-red-400');
+        showStatus('Gagal mengirim pesan: ' + err.message, 'text-rose-400');
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Kirim Pesan Anonim';
+        submitBtn.textContent = 'Kirim Pesan';
       }
     });
 
@@ -459,7 +460,7 @@
       }, 4000);
     }
 
-    // Jalankan Inisialisasi Auth & Pesan
+    // Inisialisasi
     initAuth();
   </script>
 </body>
