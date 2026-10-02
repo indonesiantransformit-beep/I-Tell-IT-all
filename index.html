@@ -4,12 +4,74 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>I Tell IT All</title>
-  <!-- Tambahkan tag favicon di bawah ini -->
+  <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Supabase JS Client SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-zinc-900 text-zinc-100 min-h-screen flex flex-col items-center py-12 px-4 antialiased">
+
+  <main class="w-full max-w-xl space-y-8">
+    
+    <!-- Header -->
+    <header class="text-center space-y-2">
+      <h1 class="text-3xl font-extrabold tracking-tight text-zinc-50">I Tell IT all</h1>
+      <p class="text-zinc-400 text-sm font-normal">Suarakan isi hatimu!</p>
+    </header>
+
+    <!-- Container Utama Form & Auth -->
+    <section class="bg-zinc-800/90 backdrop-blur-sm p-6 rounded-2xl shadow-xl border border-zinc-700/60 space-y-6">
+      
+      <!-- SEKSI LOGIN & MEMBERSHIP -->
+      <div id="auth-section">
+        <!-- Tampilan Saat Belum Login -->
+        <div id="auth-logged-out" class="space-y-3 text-center py-4 border border-dashed border-zinc-700 rounded-xl bg-zinc-900/40 p-4">
+          <p class="text-sm font-medium text-zinc-300">Silakan login terlebih dahulu untuk mengirim pesan</p>
+          <p class="text-xs text-zinc-500">Anda dapat memberikan nama, kata kunci/tag, dan akses fitur Pro setelah masuk.</p>
+          <button 
+            id="google-login-btn"
+            class="w-full flex items-center justify-center gap-3 bg-zinc-900 hover:bg-zinc-950 border border-zinc-700 text-zinc-200 font-medium py-2.5 px-4 rounded-xl transition duration-200 text-sm shadow-sm cursor-pointer mt-2"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24">
+              <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.2 9 5 12 5z"/>
+              <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/>
+              <path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 10.8 0 12s.7 2.3 1.9 4.7l3.7-2.9z"/>
+              <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.2-6.4-5.2L1.9 16c1.8 3.7 5.6 7 10.1 7z"/>
+            </svg>
+            Masuk dengan Google
+          </button>
+        </div>
+
+        <!-- Tampilan Saat Sudah Login -->
+        <div id="auth-logged-in" class="hidden space-y-3 mb-6">
+          <div class="flex items-center justify-between bg-zinc-900/70 p-3 rounded-xl border border-zinc-700/60">
+            <div class="flex items-center space-x-3">
+              <img id="user-avatar" src="" alt="Avatar" class="w-9 h-9 rounded-full border border-zinc-600">
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <span id="user-name" class="text-sm font-semibold text-zinc-200"></span>
+                  <span id="badge-status" class="text-[10px] px-2 py-0.5 rounded-full font-bold"></span>
+                </div>
+                <p id="user-email" class="text-xs text-zinc-400"></p>
+              </div>
+            </div>
+            <button id="logout-btn" class="text-xs text-rose-400 hover:text-rose-300 font-medium px-2.5 py-1 bg-rose-500/10 hover:bg-rose-500/20 roundedBerikut adalah kode HTML & JavaScript yang sudah diperbarui. Tombol pengiriman pesan kini terkunci dan disembunyikan/ditampilkan secara dinamis, sehingga **pesan hanya bisa dikirim setelah pengguna melakukan login terlebih dahulu**.
+
+```html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>I Tell IT All</title>
+  <!-- Tambahkan tag favicon di bawah ini -->
+  <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
+  <!-- Tailwind CSS CDN -->
+  <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+  <!-- Supabase JS Client SDK -->
+  <script src="[https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2](https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2)"></script>
 </head>
 <body class="bg-zinc-900 text-zinc-100 min-h-screen flex flex-col items-center py-12 px-4 antialiased">
 
@@ -62,13 +124,20 @@
           <div class="text-right text-[11px] text-zinc-500 mt-1"><span id="msg-count">0</span>/200</div>
         </div>
 
+        <!-- BUTTON KIRIM PESAN (AKTIF SAAT LOGIN) -->
         <button 
           type="submit" 
           id="submit-btn"
-          class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 px-4 rounded-xl transition duration-200 shadow-md active:scale-[0.99] disabled:opacity-50 cursor-pointer text-sm"
+          disabled
+          class="hidden w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 px-4 rounded-xl transition duration-200 shadow-md active:scale-[0.99] disabled:opacity-50 cursor-pointer text-sm"
         >
           Kirim Pesan
         </button>
+
+        <!-- PERINGATAN SAAT BELUM LOGIN -->
+        <div id="login-warning" class="bg-zinc-900/60 border border-zinc-700/80 p-3 rounded-xl text-center text-xs text-amber-400/90 font-medium">
+          Silakan masuk dengan akun Google terlebih dahulu untuk mengirim pesan.
+        </div>
 
         <p id="form-status" class="text-center text-xs hidden font-medium"></p>
       </form>
@@ -77,7 +146,7 @@
       <div class="border-t border-zinc-700/60 pt-5 mt-4">
         <!-- Tampilan Saat Belum Login -->
         <div id="auth-logged-out" class="space-y-3">
-          <p class="text-xs text-zinc-400 text-center">Login dengan Google untuk dapat memberikan Tag/Kata Kunci & Opsi Pro!</p>
+          <p class="text-xs text-zinc-400 text-center">Login dengan Google untuk dapat mengirim pesan & fitur Tag/Kata Kunci!</p>
           <button 
             id="google-login-btn"
             class="w-full flex items-center justify-center gap-3 bg-zinc-900 hover:bg-zinc-950 border border-zinc-700 text-zinc-200 font-medium py-2.5 px-4 rounded-xl transition duration-200 text-sm shadow-sm cursor-pointer"
@@ -156,7 +225,7 @@
     // ==========================================
     // 1. KONFIGURASI SUPABASE
     // ==========================================
-    const SUPABASE_URL = 'https://mqjwwtcryupvzqkfcyyz.supabase.co';
+    const SUPABASE_URL = '[https://mqjwwtcryupvzqkfcyyz.supabase.co](https://mqjwwtcryupvzqkfcyyz.supabase.co)';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1xand3dGNyeXVwdnpxa2ZjeXl6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzNDYxMDUsImV4cCI6MjEwNTkyMjEwNX0.67v9HH7p52Z66kB6maV29u3XdGG1-uW5P1RMjzHM85A';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -175,6 +244,7 @@
     const nameCount = document.getElementById('name-count');
     const msgCount = document.getElementById('msg-count');
     const submitBtn = document.getElementById('submit-btn');
+    const loginWarning = document.getElementById('login-warning');
     const formStatus = document.getElementById('form-status');
     const container = document.getElementById('messages-container');
     const loading = document.getElementById('loading');
@@ -347,9 +417,14 @@
         authLoggedIn.classList.remove('hidden');
         tagContainer.classList.remove('hidden');
 
+        // Buka Kunci Tombol Kirim Pesan
+        submitBtn.classList.remove('hidden');
+        submitBtn.disabled = false;
+        loginWarning.classList.add('hidden');
+
         userName.textContent = user.user_metadata?.full_name || user.email.split('@')[0];
         userEmail.textContent = user.email;
-        userAvatar.src = user.user_metadata?.avatar_url || 'https://via.placeholder.com/150';
+        userAvatar.src = user.user_metadata?.avatar_url || '[https://via.placeholder.com/150](https://via.placeholder.com/150)';
 
         if (!nameInput.value) {
           nameInput.value = user.user_metadata?.full_name || '';
@@ -362,6 +437,11 @@
         authLoggedOut.classList.remove('hidden');
         authLoggedIn.classList.add('hidden');
         tagContainer.classList.add('hidden');
+
+        // Kunci Kembali Tombol Kirim Pesan
+        submitBtn.classList.add('hidden');
+        submitBtn.disabled = true;
+        loginWarning.classList.remove('hidden');
       }
     }
 
@@ -506,9 +586,15 @@
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
+      // Proteksi Berlapis Sisi JavaScript
+      if (!currentUser) {
+        showStatus('Anda harus login terlebih dahulu untuk mengirim pesan!', 'text-red-400');
+        return;
+      }
+
       const sanitizedName = nameInput.value.trim();
       const sanitizedMsg = msgInput.value.trim();
-      const rawTags = currentUser ? tagInput.value.trim() : null;
+      const rawTags = tagInput ? tagInput.value.trim() : null;
 
       if (!sanitizedName || !sanitizedMsg) {
         showStatus('Nama dan pesan tidak boleh kosong!', 'text-red-400');
