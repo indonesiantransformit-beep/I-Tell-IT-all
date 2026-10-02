@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>I Tell IT All</title>
-  <!-- Tambahkan tag favicon di bawah ini -->
+  <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -18,10 +18,10 @@
     <!-- Header -->
     <header class="text-center space-y-2">
       <h1 class="text-3xl font-extrabold tracking-tight text-zinc-50">I Tell IT all</h1>
-      <p class="text-zinc-400 text-sm font-normal">Suarakan isi hatimu Anonymously!</p>
+      <p class="text-zinc-400 text-sm font-normal">Suarakan isi hatimu!</p>
     </header>
 
-    <!-- Form Input (Dark Gray Container) -->
+    <!-- Form Input Container -->
     <section class="bg-zinc-800/90 backdrop-blur-sm p-6 rounded-2xl shadow-xl border border-zinc-700/60 space-y-6">
       <form id="guestbook-form" class="space-y-4">
         
@@ -38,13 +38,13 @@
           <div class="text-right text-[11px] text-zinc-500 mt-1"><span id="name-count">0</span>/30</div>
         </div>
 
-        <!-- INPUT TAG KETIKAN BEBAS (KHUSUS USER LOGIN) -->
+        <!-- INPUT TAG KETIKAN BEBAS -->
         <div id="tag-container" class="hidden">
-          <label for="message-tag" class="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1.5">Tag / Kata Kunci (Pisahkan dengan koma)</label>
+          <label for="message-tag" class="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1.5">Tag / Kata Kunci (Optional, pisahkan dengan koma)</label>
           <input 
             type="text"
             id="message-tag"
-            placeholder="Contoh: Utarakan, Katakan, Sampaikan "
+            placeholder="Contoh: Utarakan, Katakan, Sampaikan"
             class="w-full bg-zinc-900/80 border border-zinc-700 rounded-xl px-4 py-2.5 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-400 text-sm transition"
           >
         </div>
@@ -62,22 +62,29 @@
           <div class="text-right text-[11px] text-zinc-500 mt-1"><span id="msg-count">0</span>/200</div>
         </div>
 
+        <!-- TOMBOL KIRIM PESAN (AKTIF HANYA SAAT LOGIN) -->
         <button 
           type="submit" 
           id="submit-btn"
-          class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 px-4 rounded-xl transition duration-200 shadow-md active:scale-[0.99] disabled:opacity-50 cursor-pointer text-sm"
+          disabled
+          class="hidden w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 px-4 rounded-xl transition duration-200 shadow-md active:scale-[0.99] disabled:opacity-50 cursor-pointer text-sm"
         >
           Kirim Pesan
         </button>
 
+        <!-- PERINGATAN SAAT BELUM LOGIN -->
+        <div id="login-warning" class="bg-zinc-900/60 border border-zinc-700/80 p-3 rounded-xl text-center text-xs text-amber-400/90 font-medium">
+          Silakan masuk dengan akun Google terlebih dahulu untuk dapat mengirim pesan.
+        </div>
+
         <p id="form-status" class="text-center text-xs hidden font-medium"></p>
       </form>
 
-      <!-- SEKSI LOGIN & MEMBERSHIP -->
+      <!-- SEKSI AUTH / LOGIN GOOGLE -->
       <div class="border-t border-zinc-700/60 pt-5 mt-4">
         <!-- Tampilan Saat Belum Login -->
         <div id="auth-logged-out" class="space-y-3">
-          <p class="text-xs text-zinc-400 text-center">Login dengan Google untuk dapat memberikan Tag/Kata Kunci & Opsi Pro!</p>
+          <p class="text-xs text-zinc-400 text-center">Masuk menggunakan Google untuk mengaktifkan form pengiriman pesan.</p>
           <button 
             id="google-login-btn"
             class="w-full flex items-center justify-center gap-3 bg-zinc-900 hover:bg-zinc-950 border border-zinc-700 text-zinc-200 font-medium py-2.5 px-4 rounded-xl transition duration-200 text-sm shadow-sm cursor-pointer"
@@ -93,31 +100,17 @@
         </div>
 
         <!-- Tampilan Saat Sudah Login -->
-        <div id="auth-logged-in" class="hidden space-y-3">
+        <div id="auth-logged-in" class="hidden">
           <div class="flex items-center justify-between bg-zinc-900/70 p-3 rounded-xl border border-zinc-700/60">
             <div class="flex items-center space-x-3">
               <img id="user-avatar" src="" alt="Avatar" class="w-9 h-9 rounded-full border border-zinc-600">
               <div>
-                <div class="flex items-center gap-1.5">
-                  <span id="user-name" class="text-sm font-semibold text-zinc-200"></span>
-                  <span id="badge-status" class="text-[10px] px-2 py-0.5 rounded-full font-bold"></span>
-                </div>
+                <span id="user-name" class="text-sm font-semibold text-zinc-200 block"></span>
                 <p id="user-email" class="text-xs text-zinc-400"></p>
               </div>
             </div>
             <button id="logout-btn" class="text-xs text-rose-400 hover:text-rose-300 font-medium px-2.5 py-1 bg-rose-500/10 hover:bg-rose-500/20 rounded-lg transition cursor-pointer">
               Keluar
-            </button>
-          </div>
-
-          <!-- Banner Status Membership Pro -->
-          <div id="pro-banner" class="bg-amber-500/10 border border-amber-500/30 p-3 rounded-xl flex items-center justify-between">
-            <div>
-              <p id="pro-status-text" class="text-xs font-medium text-amber-300"></p>
-              <p id="pro-expiry-text" class="text-[11px] text-amber-200/70"></p>
-            </div>
-            <button id="upgrade-btn" class="text-xs bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold px-3 py-1.5 rounded-lg transition shadow-md cursor-pointer">
-              Perpanjang
             </button>
           </div>
         </div>
@@ -162,7 +155,6 @@
 
     // Global State
     let currentUser = null;
-    let userProfile = null;
     let allMessages = [];
 
     // DOM Elements
@@ -175,6 +167,7 @@
     const nameCount = document.getElementById('name-count');
     const msgCount = document.getElementById('msg-count');
     const submitBtn = document.getElementById('submit-btn');
+    const loginWarning = document.getElementById('login-warning');
     const formStatus = document.getElementById('form-status');
     const container = document.getElementById('messages-container');
     const loading = document.getElementById('loading');
@@ -187,31 +180,22 @@
     const userAvatar = document.getElementById('user-avatar');
     const userName = document.getElementById('user-name');
     const userEmail = document.getElementById('user-email');
-    const badgeStatus = document.getElementById('badge-status');
-    const proStatusText = document.getElementById('pro-status-text');
-    const proExpiryText = document.getElementById('pro-expiry-text');
-    const upgradeBtn = document.getElementById('upgrade-btn');
 
     // Counter Karakter
     nameInput.addEventListener('input', () => { nameCount.textContent = nameInput.value.length; });
     msgInput.addEventListener('input', () => { msgCount.textContent = msgInput.value.length; });
 
-    // Event Listener untuk Search
+    // Event Listener Search
     searchInput.addEventListener('input', () => {
       renderMessages(searchInput.value.trim().toLowerCase());
     });
 
     // ==========================================
-    // 2. FUNGSI RENDER KARTU PESAN (TEMA DARK GRAY)
+    // 2. RENDER KARTU PESAN
     // ==========================================
-    function createMessageCard(name, message, createdAt, isPro = false, messageId = null, tagString = null) {
+    function createMessageCard(name, message, createdAt, messageId = null, tagString = null) {
       const card = document.createElement('div');
-      
-      if (isPro) {
-        card.className = 'bg-gradient-to-r from-amber-950/30 via-zinc-800 to-amber-950/20 p-4 rounded-xl border border-amber-500/40 shadow-md space-y-2 relative overflow-hidden';
-      } else {
-        card.className = 'bg-zinc-800/80 p-4 rounded-xl border border-zinc-700/60 shadow-sm space-y-2';
-      }
+      card.className = 'bg-zinc-800/80 p-4 rounded-xl border border-zinc-700/60 shadow-sm space-y-2';
 
       const headerDiv = document.createElement('div');
       headerDiv.className = 'flex justify-between items-center border-b border-zinc-700/50 pb-2';
@@ -220,16 +204,9 @@
       authorDiv.className = 'flex items-center gap-1.5 flex-wrap';
 
       const authorSpan = document.createElement('span');
-      authorSpan.className = isPro ? 'font-bold text-amber-400 text-sm' : 'font-semibold text-zinc-200 text-sm';
+      authorSpan.className = 'font-semibold text-zinc-200 text-sm';
       authorSpan.textContent = name;
       authorDiv.appendChild(authorSpan);
-
-      if (isPro) {
-        const proBadge = document.createElement('span');
-        proBadge.className = 'text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-1.5 py-0.2 rounded font-bold';
-        proBadge.textContent = 'PRO';
-        authorDiv.appendChild(proBadge);
-      }
 
       if (tagString) {
         const tags = tagString.split(',').map(t => t.trim()).filter(t => t.length > 0);
@@ -252,13 +229,8 @@
       dateSpan.textContent = formattedDate;
       rightHeaderDiv.appendChild(dateSpan);
 
-      // Check Admin
-      const userEmailAddress = currentUser ? currentUser.email : null;
-      const isSuperAdminEmail = userEmailAddress === 'indonesiantransformit@gmail.com';
-      const isAdminFromProfile = userProfile && (userProfile.is_admin === true || userProfile.is_admin === 'true' || userProfile.is_admin === 1);
-      const isAdmin = isSuperAdminEmail || isAdminFromProfile;
-
-      if (isAdmin) {
+      // Cek Hak Akses Hapus (Super Admin Email)
+      if (currentUser && currentUser.email === 'indonesiantransformit@gmail.com') {
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'text-xs bg-rose-500/20 hover:bg-rose-500/40 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded transition cursor-pointer ml-2';
         deleteBtn.textContent = 'Hapus';
@@ -270,7 +242,7 @@
       headerDiv.appendChild(rightHeaderDiv);
 
       const bodyP = document.createElement('p');
-      bodyP.className = isPro ? 'text-amber-100/90 text-sm whitespace-pre-wrap break-words' : 'text-zinc-300 text-sm whitespace-pre-wrap break-words';
+      bodyP.className = 'text-zinc-300 text-sm whitespace-pre-wrap break-words';
       bodyP.textContent = message;
 
       card.appendChild(headerDiv);
@@ -298,13 +270,13 @@
 
       container.className = 'space-y-3';
       filtered.forEach(item => {
-        const card = createMessageCard(item.name, item.message, item.created_at, item.is_pro, item.id, item.tag);
+        const card = createMessageCard(item.name, item.message, item.created_at, item.id, item.tag);
         container.appendChild(card);
       });
     }
 
     async function deleteMessage(messageId) {
-      if (!confirm("Apakah Anda yakin ingin menghapus pesan ini secara permanen?")) return;
+      if (!confirm("Apakah Anda yakin ingin menghapus pesan ini?")) return;
 
       try {
         const { error } = await supabaseClient
@@ -318,34 +290,38 @@
         await loadMessages();
       } catch (err) {
         alert("Gagal menghapus pesan: " + err.message);
-        console.error('Delete Error:', err);
       }
     }
 
     // ==========================================
-    // 3. SUPABASE AUTH & PROFILE
+    // 3. AUTH LOGIC
     // ==========================================
     async function initAuth() {
-      loadMessages().catch(err => console.error("Message load error:", err));
+      loadMessages();
 
       try {
         const { data: { session } } = await supabaseClient.auth.getSession();
-        await handleAuthChange(session?.user || null);
+        handleAuthChange(session?.user || null);
       } catch (e) {
         console.error("Session check error:", e);
       }
 
-      supabaseClient.auth.onAuthStateChange(async (_event, session) => {
-        await handleAuthChange(session?.user || null);
+      supabaseClient.auth.onAuthStateChange((_event, session) => {
+        handleAuthChange(session?.user || null);
       });
     }
 
-    async function handleAuthChange(user) {
+    function handleAuthChange(user) {
       currentUser = user;
       if (user) {
         authLoggedOut.classList.add('hidden');
         authLoggedIn.classList.remove('hidden');
         tagContainer.classList.remove('hidden');
+
+        // Aktifkan Form Kirim
+        submitBtn.classList.remove('hidden');
+        submitBtn.disabled = false;
+        loginWarning.classList.add('hidden');
 
         userName.textContent = user.user_metadata?.full_name || user.email.split('@')[0];
         userEmail.textContent = user.email;
@@ -355,67 +331,20 @@
           nameInput.value = user.user_metadata?.full_name || '';
           nameCount.textContent = nameInput.value.length;
         }
-
-        await fetchUserProfile(user.id);
       } else {
-        userProfile = null;
         authLoggedOut.classList.remove('hidden');
         authLoggedIn.classList.add('hidden');
         tagContainer.classList.add('hidden');
+
+        // Kunci Form Kirim
+        submitBtn.classList.add('hidden');
+        submitBtn.disabled = true;
+        loginWarning.classList.remove('hidden');
       }
+      
+      renderMessages(searchInput.value.trim().toLowerCase());
     }
 
-    async function fetchUserProfile(userId) {
-      try {
-        const { data, error } = await supabaseClient
-          .from('profiles')
-          .select('*')
-          .eq('id', userId)
-          .maybeSingle();
-
-        if (error) throw error;
-
-        userProfile = data;
-        updateProUI();
-        renderMessages(searchInput.value.trim().toLowerCase());
-      } catch (err) {
-        console.error('Error fetching profile:', err);
-      }
-    }
-
-    function isProActive() {
-      if (!userProfile) return false;
-      if (!userProfile.is_pro) return false;
-      if (!userProfile.pro_until) return true;
-      return new Date(userProfile.pro_until) > new Date();
-    }
-
-    function updateProUI() {
-      const active = isProActive();
-
-      if (active) {
-        badgeStatus.textContent = 'PRO';
-        badgeStatus.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30';
-        
-        proStatusText.textContent = 'Status Membership: PRO Active 🌟';
-        if (userProfile.pro_until) {
-          const exp = new Date(userProfile.pro_until).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-          proExpiryText.textContent = `Aktif hingga: ${exp}`;
-        } else {
-          proExpiryText.textContent = 'Status: Member Pro Selamanya';
-        }
-        upgradeBtn.textContent = 'Perpanjang';
-      } else {
-        badgeStatus.textContent = 'FREE';
-        badgeStatus.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-zinc-700 text-zinc-400';
-        
-        proStatusText.textContent = 'Status Membership: Pengguna Gratis';
-        proExpiryText.textContent = 'Upgrade ke Pro agar warna pesan Anda tampil beda!';
-        upgradeBtn.textContent = 'Upgrade Pro';
-      }
-    }
-
-    // Auth Action Handlers
     googleLoginBtn.addEventListener('click', async () => {
       try {
         googleLoginBtn.disabled = true;
@@ -431,8 +360,7 @@
 
         if (error) throw error;
       } catch (err) {
-        alert("Gagal menghubungkan ke Google Login: " + err.message);
-        console.error('Login Error:', err);
+        alert("Gagal login dengan Google: " + err.message);
         googleLoginBtn.disabled = false;
         googleLoginBtn.innerHTML = `
           <svg class="w-4 h-4" viewBox="0 0 24 24">
@@ -451,35 +379,8 @@
       googleLoginBtn.disabled = false;
     });
 
-    upgradeBtn.addEventListener('click', async () => {
-      if (!currentUser) return;
-      
-      const confirmUpgrade = confirm("Simulasi Upgrade Membership Pro (30 Hari):\n\nTekan OK untuk aktifkan status PRO pada akun Anda.");
-      if (confirmUpgrade) {
-        const nextMonth = new Date();
-        nextMonth.setDate(nextMonth.getDate() + 30);
-
-        const { error } = await supabaseClient
-          .from('profiles')
-          .upsert({
-            id: currentUser.id,
-            email: currentUser.email,
-            is_pro: true,
-            pro_until: nextMonth.toISOString()
-          });
-
-        if (!error) {
-          alert("Selamat! Membership PRO Anda berhasil diaktifkan selama 30 hari.");
-          await fetchUserProfile(currentUser.id);
-        } else {
-          alert("Gagal memperbarui status membership: " + error.message);
-          console.error(error);
-        }
-      }
-    });
-
     // ==========================================
-    // 4. FETCH DATA DARI SUPABASE
+    // 4. LOAD & SUBMIT PESAN
     // ==========================================
     async function loadMessages() {
       try {
@@ -496,34 +397,28 @@
 
       } catch (err) {
         loading.textContent = 'Gagal memuat pesan: ' + err.message;
-        console.error('Fetch Error:', err);
       }
     }
 
-    // ==========================================
-    // 5. SUBMIT FORM
-    // ==========================================
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
+      if (!currentUser) {
+        showStatus('Anda harus login terlebih dahulu untuk mengirim pesan!', 'text-red-400');
+        return;
+      }
+
       const sanitizedName = nameInput.value.trim();
       const sanitizedMsg = msgInput.value.trim();
-      const rawTags = currentUser ? tagInput.value.trim() : null;
+      const rawTags = tagInput ? tagInput.value.trim() : null;
 
       if (!sanitizedName || !sanitizedMsg) {
         showStatus('Nama dan pesan tidak boleh kosong!', 'text-red-400');
         return;
       }
 
-      if (sanitizedName.length > 30 || sanitizedMsg.length > 200) {
-        showStatus('Input melebihi batas karakter!', 'text-red-400');
-        return;
-      }
-
       submitBtn.disabled = true;
       submitBtn.textContent = 'Mengirim...';
-
-      const userIsPro = isProActive();
 
       try {
         const { error } = await supabaseClient
@@ -532,7 +427,6 @@
             { 
               name: sanitizedName, 
               message: sanitizedMsg,
-              is_pro: userIsPro,
               tag: rawTags || null
             }
           ]);
@@ -549,7 +443,6 @@
 
       } catch (err) {
         showStatus('Gagal mengirim pesan: ' + err.message, 'text-red-400');
-        console.error('Insert Error:', err);
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Kirim Pesan';
@@ -565,7 +458,7 @@
       }, 4000);
     }
 
-    // Single Entry Point Initialization
+    // Inisialisasi
     initAuth();
   </script>
 </body>
