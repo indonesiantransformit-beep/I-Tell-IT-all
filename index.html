@@ -23,33 +23,20 @@
     <!-- Header -->
     <header class="text-center space-y-2">
       <h1 class="text-3xl font-extrabold tracking-tight text-zinc-50">I Tell IT all</h1>
-      <p class="text-zinc-400 text-sm font-normal">Suarakan isi hatimu!</p>
+      <p class="text-zinc-400 text-sm font-normal">Suarakan isi hatimu secara anonim!</p>
     </header>
 
     <!-- Form Input Container -->
     <section class="bg-zinc-800/90 backdrop-blur-sm p-6 rounded-2xl shadow-xl border border-zinc-700/60 space-y-6">
       <form id="guestbook-form" class="space-y-4">
-        
-        <div>
-          <label for="username" class="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1.5">Nama / Panggilan</label>
-          <input 
-            type="text" 
-            id="username" 
-            maxlength="30" 
-            required
-            placeholder="Maksimal 30 karakter"
-            class="w-full bg-zinc-900/80 border border-zinc-700 rounded-xl px-4 py-2.5 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:border-transparent text-sm transition"
-          >
-          <div class="text-right text-[11px] text-zinc-500 mt-1"><span id="name-count">0</span>/30</div>
-        </div>
 
         <!-- INPUT TAG KETIKAN BEBAS -->
         <div id="tag-container" class="hidden">
-          <label for="message-tag" class="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1.5">Tag / Kata Kunci (Optional, pisahkan dengan koma)</label>
+          <label for="message-tag" class="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1.5">Tag / Kata Kunci (Opsional, pisahkan dengan koma)</label>
           <input 
             type="text"
             id="message-tag"
-            placeholder="Contoh: Utarakan, Katakan, Sampaikan"
+            placeholder="Contoh: Curhat, Saran, Katakan"
             class="w-full bg-zinc-900/80 border border-zinc-700 rounded-xl px-4 py-2.5 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-400 text-sm transition"
           >
         </div>
@@ -133,7 +120,7 @@
           <input 
             type="text" 
             id="search-input" 
-            placeholder="Cari nama, pesan, atau tag..."
+            placeholder="Cari pesan atau tag..."
             class="w-full bg-zinc-800/80 border border-zinc-700 rounded-xl pl-9 pr-3 py-1.5 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-400"
           >
           <svg class="w-4 h-4 text-zinc-500 absolute left-2.5 top-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -182,12 +169,10 @@
 
     // DOM Elements
     const form = document.getElementById('guestbook-form');
-    const nameInput = document.getElementById('username');
     const msgInput = document.getElementById('message');
     const tagInput = document.getElementById('message-tag');
     const tagContainer = document.getElementById('tag-container');
     const searchInput = document.getElementById('search-input');
-    const nameCount = document.getElementById('name-count');
     const msgCount = document.getElementById('msg-count');
     const submitBtn = document.getElementById('submit-btn');
     const loginWarning = document.getElementById('login-warning');
@@ -204,8 +189,7 @@
     const userName = document.getElementById('user-name');
     const userEmail = document.getElementById('user-email');
 
-    // Counter Karakter
-    nameInput.addEventListener('input', () => { nameCount.textContent = nameInput.value.length; });
+    // Counter Karakter Pesan
     msgInput.addEventListener('input', () => { msgCount.textContent = msgInput.value.length; });
 
     // Event Listener Search
@@ -343,11 +327,6 @@
         userName.textContent = user.displayName || user.email.split('@')[0];
         userEmail.textContent = user.email;
         userAvatar.src = user.photoURL || 'https://via.placeholder.com/150';
-
-        if (!nameInput.value) {
-          nameInput.value = user.displayName || '';
-          nameCount.textContent = nameInput.value.length;
-        }
       } else {
         authLoggedOut.classList.remove('hidden');
         authLoggedIn.classList.add('hidden');
@@ -420,12 +399,15 @@
         return;
       }
 
-      const sanitizedName = nameInput.value.trim();
+      // GENERATE NAMA ANONIM DENGAN ANGKA ACAK (1000 - 9999)
+      const randomNumber = Math.floor(1000 + Math.random() * 9000);
+      const anonymousName = `Anonymous#${randomNumber}`;
+
       const sanitizedMsg = msgInput.value.trim();
       const rawTags = tagInput ? tagInput.value.trim() : null;
 
-      if (!sanitizedName || !sanitizedMsg) {
-        showStatus('Nama dan pesan tidak boleh kosong!', 'text-red-400');
+      if (!sanitizedMsg) {
+        showStatus('Pesan tidak boleh kosong!', 'text-red-400');
         return;
       }
 
@@ -437,7 +419,7 @@
           .from('guestbook')
           .insert([
             { 
-              name: sanitizedName, 
+              name: anonymousName, 
               message: sanitizedMsg,
               tag: rawTags || null
             }
