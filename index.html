@@ -8,8 +8,13 @@
   <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Supabase JS Client SDK -->
+  
+  <!-- Supabase JS Client SDK (Khusus Database) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Firebase App & Auth SDK (Khusus Google Authentication) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 </head>
 <body class="bg-zinc-900 text-zinc-100 min-h-screen flex flex-col items-center py-12 px-4 antialiased">
 
@@ -80,7 +85,7 @@
         <p id="form-status" class="text-center text-xs hidden font-medium"></p>
       </form>
 
-      <!-- SEKSI AUTH / LOGIN GOOGLE -->
+      <!-- SEKSI AUTH / LOGIN GOOGLE (FIREBASE) -->
       <div class="border-t border-zinc-700/60 pt-5 mt-4">
         <!-- Tampilan Saat Belum Login -->
         <div id="auth-logged-out" class="space-y-3">
@@ -147,11 +152,29 @@
 
   <script>
     // ==========================================
-    // 1. KONFIGURASI SUPABASE
+    // 1. KONFIGURASI SUPABASE (DATABASE)
     // ==========================================
     const SUPABASE_URL = 'https://mqjwwtcryupvzqkfcyyz.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1xand3dGNyeXVwdnpxa2ZjeXl6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzNDYxMDUsImV4cCI6MjEwNTkyMjEwNX0.67v9HH7p52Z66kB6maV29u3XdGG1-uW5P1RMjzHM85A';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ==========================================
+    // 2. KONFIGURASI FIREBASE (AUTHENTICATION)
+    // ==========================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyBfa0wZKRCBardQy6jaxyj_pM_2r5-HiR4",
+      authDomain: "i-tell-it-all-c7725.firebaseapp.com",
+      projectId: "i-tell-it-all-c7725",
+      storageBucket: "i-tell-it-all-c7725.firebasestorage.app",
+      messagingSenderId: "474002885556",
+      appId: "1:474002885556:web:b054be23e49307935900e1",
+      measurementId: "G-HLTRF4S6VW"
+    };
+
+    // Inisialisasi Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const googleProvider = new firebase.auth.GoogleAuthProvider();
 
     // Global State
     let currentUser = null;
@@ -191,7 +214,7 @@
     });
 
     // ==========================================
-    // 2. RENDER KARTU PESAN
+    // 3. RENDER KARTU PESAN
     // ==========================================
     function createMessageCard(name, message, createdAt, messageId = null, tagString = null) {
       const card = document.createElement('div');
@@ -294,20 +317,14 @@
     }
 
     // ==========================================
-    // 3. AUTH LOGIC
+    // 4. FIREBASE AUTH LOGIC
     // ==========================================
-    async function initAuth() {
+    function initAuth() {
       loadMessages();
 
-      try {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        handleAuthChange(session?.user || null);
-      } catch (e) {
-        console.error("Session check error:", e);
-      }
-
-      supabaseClient.auth.onAuthStateChange((_event, session) => {
-        handleAuthChange(session?.user || null);
+      // Observer Status Auth Firebase
+      auth.onAuthStateChanged((user) => {
+        handleAuthChange(user);
       });
     }
 
@@ -323,12 +340,12 @@
         submitBtn.disabled = false;
         loginWarning.classList.add('hidden');
 
-        userName.textContent = user.user_metadata?.full_name || user.email.split('@')[0];
+        userName.textContent = user.displayName || user.email.split('@')[0];
         userEmail.textContent = user.email;
-        userAvatar.src = user.user_metadata?.avatar_url || 'https://via.placeholder.com/150';
+        userAvatar.src = user.photoURL || 'https://via.placeholder.com/150';
 
         if (!nameInput.value) {
-          nameInput.value = user.user_metadata?.full_name || '';
+          nameInput.value = user.displayName || '';
           nameCount.textContent = nameInput.value.length;
         }
       } else {
@@ -345,20 +362,14 @@
       renderMessages(searchInput.value.trim().toLowerCase());
     }
 
+    // Tombol Login Google
     googleLoginBtn.addEventListener('click', async () => {
       try {
         googleLoginBtn.disabled = true;
         googleLoginBtn.textContent = 'Mengarahkan ke Google...';
 
-        const { error } = await supabaseClient.auth.signInWithOAuth({
-          provider: 'google',
-          options: { 
-            redirectTo: window.location.origin + window.location.pathname,
-            queryParams: { prompt: 'select_account' }
-          }
-        });
-
-        if (error) throw error;
+        // Menggunakan Popup Login dari Firebase Auth
+        await auth.signInWithPopup(googleProvider);
       } catch (err) {
         alert("Gagal login dengan Google: " + err.message);
         googleLoginBtn.disabled = false;
@@ -374,13 +385,14 @@
       }
     });
 
+    // Tombol Logout
     logoutBtn.addEventListener('click', async () => {
-      await supabaseClient.auth.signOut();
+      await auth.signOut();
       googleLoginBtn.disabled = false;
     });
 
     // ==========================================
-    // 4. LOAD & SUBMIT PESAN
+    // 5. LOAD & SUBMIT PESAN (SUPABASE)
     // ==========================================
     async function loadMessages() {
       try {
@@ -458,7 +470,7 @@
       }, 4000);
     }
 
-    // Inisialisasi
+    // Jalankan Inisialisasi Auth & Pesan
     initAuth();
   </script>
 </body>
