@@ -12,7 +12,7 @@
   <!-- Supabase JS Client SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- Firebase App & Auth SDK -->
+  <!-- Firebase App & Auth SDK (Compat Web Version) -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 </head>
@@ -148,23 +148,23 @@
 
   <script>
     // ==========================================
-    // 1. KONFIGURASI SUPABASE (DATABASE)
+    // 1. KONFIGURASI SUPABASE (DATABASE BARU)
     // ==========================================
-    const SUPABASE_URL = 'https://mqjwwtcryupvzqkfcyyz.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_ojvsGwNkAmMOFI1PSFcB2g_5RrjjtBC';
+    const SUPABASE_URL = 'https://zaheptbiviaqvjsqxwvl.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InphaGVwdGJpdmlhcXZqc3F4d3ZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEwMjIwMjIsImV4cCI6MjEwNjU5ODAyMn0.EDYrILKgk8IuKbp5wfuWbq0PlgeUvlyOPFTUy_ltNiU';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // ==========================================
-    // 2. KONFIGURASI FIREBASE (AUTHENTICATION)
+    // 2. KONFIGURASI FIREBASE (AUTHENTICATION BARU)
     // ==========================================
     const firebaseConfig = {
-      apiKey: "AIzaSyAJ1P14PDFYWPgUhLAPHnMG54A52orJIt4",
-      authDomain: "i-tell-it-all-c7725.firebaseapp.com",
-      projectId: "i-tell-it-all-c7725",
-      storageBucket: "i-tell-it-all-c7725.firebasestorage.app",
-      messagingSenderId: "474002885556",
-      appId: "1:474002885556:web:b054be23e49307935900e1",
-      measurementId: "G-HLTRF4S6VW"
+      apiKey: "AIzaSyCVFXIUMc9-UBrzfMaGp_cBH4Ab2fORM6E",
+      authDomain: "itellitall-ffd1b.firebaseapp.com",
+      projectId: "itellitall-ffd1b",
+      storageBucket: "itellitall-ffd1b.firebasestorage.app",
+      messagingSenderId: "275288919718",
+      appId: "1:275288919718:web:c0574a4e3e3b9650cdae67",
+      measurementId: "G-DK19BXPHK6"
     };
 
     firebase.initializeApp(firebaseConfig);
@@ -245,7 +245,7 @@
       dateSpan.textContent = formattedDate;
       rightHeaderDiv.appendChild(dateSpan);
 
-      // Super Admin Email Hapus
+      // Super Admin Email Hapus (Ganti email ini jika akun admin Anda berubah)
       if (currentUser && currentUser.email === 'indonesiantransformit@gmail.com') {
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'text-xs bg-rose-500/20 hover:bg-rose-500/40 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded transition cursor-pointer ml-2';
